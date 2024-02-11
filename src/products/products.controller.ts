@@ -13,6 +13,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { buildSuccessfulResponse } from 'src/common/helpers';
 
 @Controller('products')
 export class ProductsController {
@@ -29,29 +30,18 @@ export class ProductsController {
   }
 
   @Get()
-  async getAllProducts() {
-    return await this.productsService.getAllProducts();
+  async getAllProducts(@Query('name') name: string) {
+    const products = await this.productsService.getAllProducts(name);
+    console.log({ products });
+
+    return buildSuccessfulResponse('Products retrieved successfully', products);
   }
 
   @Get(':id')
   async getProductById(@Param('id') id: string) {
-    const productFound = await this.productsService.getProductById(Number(id));
-    if (!productFound) throw new NotFoundException('Product not Found');
-    return productFound;
-  }
+    const product = await this.productsService.getProductById(Number(id));
 
-  @Get('search')
-  async searchProductsByName(@Query('name') name: string) {
-    console.log(name);
-
-    if (!name) {
-      throw new BadRequestException('Name parameter is required');
-    }
-
-    const productsFound = await this.productsService.searchProductsByName(name);
-    if (productsFound.length === 0)
-      throw new NotFoundException('No products found with that name');
-    return productsFound;
+    return buildSuccessfulResponse('Product retrieved successfully', product);
   }
 
   @Put(':id')

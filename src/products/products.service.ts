@@ -8,36 +8,35 @@ import { Product } from '@prisma/client';
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async createProduct(data: CreateProductDto): Promise<Product> {
-    return await this.prisma.product.create({
+  createProduct(data: CreateProductDto): Promise<Product> {
+    return this.prisma.product.create({
       data,
     });
   }
 
-  async getAllProducts(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
-  }
+  getAllProducts(name: string): Promise<Product[]> {
+    console.log({ name });
 
-  async getProductById(id: number): Promise<Product> {
-    return await this.prisma.product.findUnique({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async searchProductsByName(name: string): Promise<Product[]> {
-    return await this.prisma.product.findMany({
+    if (!name) return this.prisma.product.findMany();
+    return this.prisma.product.findMany({
       where: {
         name: {
-          contains: name, // Busca productos cuyo nombre contenga la cadena proporcionada
+          contains: name,
         },
       },
     });
   }
 
-  async updateProduct(id: number, data: UpdateProductDto): Promise<Product> {
-    return await this.prisma.product.update({
+  getProductById(id: number): Promise<Product> {
+    return this.prisma.product.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  updateProduct(id: number, data: UpdateProductDto): Promise<Product> {
+    return this.prisma.product.update({
       where: {
         id,
       },
@@ -45,8 +44,8 @@ export class ProductsService {
     });
   }
 
-  async deleteProduct(id: number): Promise<Product> {
-    return await this.prisma.product.delete({
+  deleteProduct(id: number): Promise<Product> {
+    return this.prisma.product.delete({
       where: {
         id,
       },
